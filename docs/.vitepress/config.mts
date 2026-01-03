@@ -65,6 +65,15 @@ export default defineConfig({
             { text: '调试概述', link: '/guide/debug/' },
             { text: '常见故障', link: '/guide/debug/troubleshooting' }
           ]
+        },
+        {
+          text: '开发指引',
+          collapsed: false,
+          items: [
+            { text: '开发概述', link: '/guide/develop/' },
+            { text: '开发环境搭建', link: '/guide/develop/env_setup' },
+            { text: '定制ioctl文档', link: '/guide/develop/custom_ioctl' }
+          ]
         }
       ]
     },
