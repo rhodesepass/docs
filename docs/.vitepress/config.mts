@@ -4,7 +4,7 @@ export default defineConfig({
   title: '明日方舟电子通行证',
   description: '基于F1C200S的开源Linux手持开发板文档',
   lang: 'zh-CN',
-  base: '/hardware-docs-2.0/', // GitHub 仓库名，部署到 rhodesepass/hardware-docs-2.0
+  base: '/docs/', // GitHub 仓库名，部署到 rhodesepass/hardware-docs-2.0
 
   head: [
     ['link', { rel: 'icon', href: '/logo.png' }]
@@ -22,7 +22,7 @@ export default defineConfig({
       {
         text: '相关链接',
         items: [
-          { text: 'GitHub', link: 'https://github.com/rhodesepass/hardware-docs-2.0' },
+          { text: '文档GitHub', link: 'https://github.com/rhodesepass/docs' },
           { text: '软件仓库', link: 'https://github.com/inapp123/epass_drm_app' }
         ]
       }
@@ -69,7 +69,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/rhodesepass/hardware-docs-2.0' }
+      { icon: 'github', link: 'https://github.com/rhodesepass/docs' }
     ],
 
     footer: {
@@ -112,7 +112,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/rhodesepass/hardware-docs-2.0/edit/master/docs/:path',
+      pattern: 'https://github.com/rhodesepass/docs/edit/master/docs/:path',
       text: '在 GitHub 上编辑此页面'
     }
   }
