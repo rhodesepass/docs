@@ -4,9 +4,9 @@
 
 <style>
 .contributors-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
   margin-top: 24px;
 }
 
@@ -14,13 +14,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 16px 12px;
   border-radius: 12px;
   background: var(--vp-c-bg-soft);
   transition: transform 0.2s, box-shadow 0.2s;
   text-decoration: none;
   color: inherit;
-  min-width: 160px;
 }
 
 .contributor-card:hover {
@@ -29,17 +28,40 @@
 }
 
 .contributor-avatar {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  margin-bottom: 12px;
-  border: 3px solid var(--vp-c-brand);
+  margin-bottom: 8px;
+  border: 2px solid var(--vp-c-brand);
 }
 
 .contributor-name {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--vp-c-text-1);
+  text-align: center;
+  word-break: break-all;
+}
+
+@media (max-width: 640px) {
+  .contributors-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .contributor-card {
+    padding: 12px 8px;
+  }
+
+  .contributor-avatar {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 6px;
+  }
+
+  .contributor-name {
+    font-size: 12px;
+  }
 }
 </style>
 
