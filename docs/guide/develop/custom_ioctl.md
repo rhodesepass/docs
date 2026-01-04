@@ -99,4 +99,4 @@ arg1: buffer UV地址(用户态地址)
 否则，会自动开启图层的alpha使能寄存器。
 
 ## 示例代码
-（咕咕咕，可以先参考一下：https://github.com/rhodesepass/drm_app_neo/blob/master/src/driver/drm_warpper.c）
+（咕咕咕，可以先参考一下：https://github.com/rhodesepass/drm_app_neo/blob/master/src/driver/drm_warpper.c ）
