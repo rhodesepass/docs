@@ -122,7 +122,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/rhodesepass/docs/edit/master/docs/:path',
+      pattern: 'https://github.com/rhodesepass/docs/edit/main/docs/:path',
       text: '在 GitHub 上编辑此页面'
     }
   }
