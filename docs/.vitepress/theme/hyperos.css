@@ -2,29 +2,42 @@
   --hyperos-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --hyperos-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --hyperos-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  --hyperos-duration: 0.4s;
-  --hyperos-duration-fast: 0.25s;
-  --hyperos-duration-slow: 0.6s;
+  --hyperos-duration: 0.35s;
+  --hyperos-duration-fast: 0.2s;
+  --hyperos-duration-slow: 0.5s;
+}
+
+.VPContent,
+.VPHero,
+.VPFeatures .VPFeature,
+.VPSidebar,
+.VPButton {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  contain: layout style paint;
 }
 
 .page-leaving .VPContent {
+  will-change: transform, opacity;
   opacity: 0.6;
-  transform: scale(0.98);
-  transition: all 0.2s var(--hyperos-smooth);
+  transform: scale(0.98) translateZ(0);
+  transition: opacity 0.2s var(--hyperos-smooth),
+              transform 0.2s var(--hyperos-smooth);
 }
 
 .page-entering .VPContent {
+  will-change: transform, opacity;
   animation: pageEnter 0.5s var(--hyperos-spring) forwards;
 }
 
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.98);
+    transform: translateY(20px) scale(0.98) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) translateZ(0);
   }
 }
 
@@ -35,11 +48,11 @@
 @keyframes heroFadeIn {
   from {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(40px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 }
 
@@ -66,22 +79,22 @@
 @keyframes textSlideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(30px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 }
 
 @keyframes imageFloat {
   from {
     opacity: 0;
-    transform: translateY(40px) scale(0.9);
+    transform: translateY(40px) scale(0.9) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) translateZ(0);
   }
 }
 
@@ -145,8 +158,8 @@
 .VPFeatures .VPFeature {
   opacity: 0;
   animation: featureCardIn 0.5s var(--hyperos-spring) forwards;
-  transition: transform 0.4s var(--hyperos-spring),
-              box-shadow 0.4s var(--hyperos-smooth);
+  transition: transform 0.4s var(--hyperos-spring);
+  filter: drop-shadow(0 0 0 transparent);
 }
 
 .VPFeatures .VPFeature:nth-child(1) { animation-delay: 0.1s; }
@@ -159,28 +172,35 @@
 @keyframes featureCardIn {
   from {
     opacity: 0;
-    transform: translateY(40px) scale(0.95);
+    transform: translateY(40px) scale(0.95) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) translateZ(0);
   }
 }
 
 .VPFeatures .VPFeature:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  will-change: transform, filter;
+  transform: translateY(-8px) scale(1.02) translateZ(0);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
 }
 
 .VPFeatures .VPFeature:active {
-  transform: translateY(-4px) scale(0.98);
+  transform: translateY(-4px) scale(0.98) translateZ(0);
   transition-duration: 0.1s;
 }
 
+.VPFeatures .VPFeature:not(:hover) {
+  will-change: auto;
+}
+
 .VPButton {
-  transition: all 0.3s var(--hyperos-spring);
+  transition: transform 0.3s var(--hyperos-spring),
+              filter 0.3s var(--hyperos-spring);
   position: relative;
   overflow: hidden;
+  filter: drop-shadow(0 0 0 transparent);
 }
 
 .VPButton::after {
@@ -190,22 +210,33 @@
   background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
   opacity: 0;
   transform: scale(0);
-  transition: all 0.5s var(--hyperos-smooth);
+  transition: opacity 0.5s var(--hyperos-smooth),
+              transform 0.5s var(--hyperos-smooth);
+  will-change: opacity, transform;
 }
 
 .VPButton:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  will-change: transform, filter;
+  transform: translateY(-2px) scale(1.02) translateZ(0);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
 }
 
 .VPButton:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.98) translateZ(0);
   transition-duration: 0.1s;
 }
 
 .VPButton:active::after {
   opacity: 1;
-  transform: scale(2);
+  transform: scale(2) translateZ(0);
+}
+
+.VPButton:not(:hover):not(:active) {
+  will-change: auto;
+}
+
+.VPButton:not(:active)::after {
+  will-change: auto;
 }
 
 @media (min-width: 960px) {
@@ -228,31 +259,31 @@
 @keyframes sidebarSlide {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-20px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) translateZ(0);
   }
 }
 
 @keyframes sidebarItemIn {
   from {
     opacity: 0;
-    transform: translateX(-15px);
+    transform: translateX(-15px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) translateZ(0);
   }
 }
 
 .VPSidebarItem {
-  transition: all 0.25s var(--hyperos-spring);
+  transition: transform 0.25s var(--hyperos-spring);
 }
 
 .VPSidebarItem:hover {
-  transform: translateX(4px);
+  transform: translateX(4px) translateZ(0);
 }
 
 .VPSidebarItem.is-active {
@@ -260,9 +291,9 @@
 }
 
 @keyframes activeItemPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1) translateZ(0); }
+  50% { transform: scale(1.02) translateZ(0); }
+  100% { transform: scale(1) translateZ(0); }
 }
 
 @media (max-width: 959px) {
@@ -290,7 +321,7 @@
 }
 
 .VPNavBarMenuLink {
-  transition: all 0.25s var(--hyperos-spring);
+  transition: transform 0.25s var(--hyperos-spring);
   position: relative;
 }
 
@@ -302,7 +333,7 @@
   width: 0;
   height: 2px;
   background: var(--vp-c-brand-1);
-  transition: all 0.3s var(--hyperos-spring);
+  transition: width 0.3s var(--hyperos-spring);
   transform: translateX(-50%);
   border-radius: 2px;
 }
@@ -312,7 +343,7 @@
 }
 
 .VPNavBarMenuLink:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
 }
 
 .vp-doc h1,
@@ -331,34 +362,39 @@
 @keyframes contentFadeIn {
   from {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(15px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 }
 
 .vp-doc div[class*='language-'] {
   animation: codeBlockIn 0.4s var(--hyperos-spring) 0.15s both;
-  transition: transform 0.3s var(--hyperos-spring),
-              box-shadow 0.3s var(--hyperos-smooth);
+  transition: transform 0.3s var(--hyperos-spring);
+  filter: drop-shadow(0 0 0 transparent);
 }
 
 @keyframes codeBlockIn {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.98);
+    transform: translateY(20px) scale(0.98) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) translateZ(0);
   }
 }
 
 .vp-doc div[class*='language-']:hover {
-  transform: scale(1.01);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  will-change: transform, filter;
+  transform: scale(1.01) translateZ(0);
+  filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.12));
+}
+
+.vp-doc div[class*='language-']:not(:hover) {
+  will-change: auto;
 }
 
 .vp-doc .custom-block {
@@ -369,16 +405,16 @@
 @keyframes blockSlideIn {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-20px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) translateZ(0);
   }
 }
 
 .vp-doc .custom-block:hover {
-  transform: translateX(5px);
+  transform: translateX(5px) translateZ(0);
 }
 
 .vp-doc table {
@@ -388,41 +424,46 @@
 @keyframes tableIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(20px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 }
 
 .vp-doc tr {
-  transition: background-color 0.25s var(--hyperos-smooth),
-              transform 0.25s var(--hyperos-spring);
+  transition: transform 0.25s var(--hyperos-spring);
 }
 
 .vp-doc tr:hover {
-  transform: scale(1.01);
+  transform: scale(1.01) translateZ(0);
 }
 
 .vp-doc img {
   transition: transform 0.4s var(--hyperos-spring),
-              box-shadow 0.4s var(--hyperos-smooth);
+              filter 0.4s var(--hyperos-spring);
   border-radius: 8px;
+  filter: drop-shadow(0 0 0 transparent);
 }
 
 .vp-doc img:hover {
-  transform: scale(1.02);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  will-change: transform, filter;
+  transform: scale(1.02) translateZ(0);
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.15));
+}
+
+.vp-doc img:not(:hover) {
+  will-change: auto;
 }
 
 .vp-doc a {
-  transition: all 0.25s var(--hyperos-spring);
+  transition: transform 0.25s var(--hyperos-spring);
   position: relative;
 }
 
 .vp-doc a:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
 }
 
 .VPDocFooter {
@@ -432,29 +473,41 @@
 @keyframes footerIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(30px) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 }
 
 .pager-link {
-  transition: all 0.3s var(--hyperos-spring);
+  transition: transform 0.3s var(--hyperos-spring),
+              filter 0.3s var(--hyperos-spring);
+  filter: drop-shadow(0 0 0 transparent);
 }
 
 .pager-link:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  will-change: transform, filter;
+  transform: translateY(-5px) translateZ(0);
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+}
+
+.pager-link:not(:hover) {
+  will-change: auto;
 }
 
 .VPNavBarSearch {
-  transition: all 0.3s var(--hyperos-spring);
+  transition: transform 0.3s var(--hyperos-spring);
 }
 
 .VPNavBarSearch:hover {
-  transform: scale(1.05);
+  will-change: transform;
+  transform: scale(1.05) translateZ(0);
+}
+
+.VPNavBarSearch:not(:hover) {
+  will-change: auto;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -473,15 +526,15 @@
 }
 
 .dark .VPFeatures .VPFeature:hover {
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
 }
 
 .dark .vp-doc div[class*='language-']:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
 }
 
 .dark .vp-doc img:hover {
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
 }
 
 @media (max-width: 768px) {
@@ -490,11 +543,11 @@
   }
 
   .VPFeatures .VPFeature:hover {
-    transform: translateY(-4px) scale(1.01);
+    transform: translateY(-4px) scale(1.01) translateZ(0);
   }
 
   .VPButton:hover {
-    transform: translateY(-1px) scale(1.01);
+    transform: translateY(-1px) scale(1.01) translateZ(0);
   }
 }
 
