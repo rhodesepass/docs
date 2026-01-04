@@ -75,7 +75,6 @@ export default defineConfig({
           items: [
             { text: '说明书目录', link: '/guide/docs-usage/' },
             { text: '通行证使用说明书', link: '/guide/docs-usage/user-manual' },
-            { text: '如何贡献', link: '/guide/docs-usage/contributing' }
           ]
         },
         {
