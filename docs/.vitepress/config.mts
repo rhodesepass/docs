@@ -103,8 +103,8 @@ export default defineConfig({
     ],
 
     footer: {
-      message: '基于 CERN-OHL-P-2.0 许可发布',
-      copyright: 'Copyright © 2025-present'
+      message: '白银的工具箱 | <a href="https://beian.miit.gov.cn/">桂ICP备2021004005号-1 </a> <img src="https://iccmc.cc/ga_beian.png" width="12px" style="display:inline"> <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=45010202000531">桂公网安备 45010202000531号</a>',
+      copyright: 'Copyright ©电子通行证Contributors 2025-present 基于CC-BY-SA 4.0许可发布'
     },
 
     search: {
