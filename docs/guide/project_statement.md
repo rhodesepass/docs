@@ -24,7 +24,7 @@
 
 1. 请在商品页面、说明书、包装或其他醒目位置标注：
 
-   > “此为开源项目《基于 f1c200s 的明日方舟电子通行认证终端》（https://github.com/rhodesepass/electric_pass）的第三方复刻，与原作者无关；相关问题由我（制作者）负责处理。”
+   > “此为开源项目《基于 f1c200s 的明日方舟电子通行认证终端》（[https://github.com/rhodesepass/electric_pass](https://github.com/rhodesepass/electric_pass) ）的第三方复刻，与原作者无关；相关问题由我（制作者）负责处理。”
 
 2. 一切形式的售卖/商业化行为均为您个人（或贵方）行为，本人不对任何后果负责。
    请您自行负责售后、质量控制与用户支持，并正确引导问题反馈渠道（通过 Issue 提交技术问题）。
