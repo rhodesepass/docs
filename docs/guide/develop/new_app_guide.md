@@ -56,6 +56,66 @@ cd "/app/myapp"
 exec "/app/myapp/myapp"
 ```
 
+### 文件关联启动
+
+当应用配置了 `extensions` 字段后，用户可以在文件管理器中选择关联文件来启动应用：
+
+启动命令格式：
+```sh
+cd "/app/myapp"
+exec "/app/myapp/myapp" "/path/to/selected/file.txt"
+```
+
+在代码中处理文件参数：
+```c
+int main(int argc, char *argv[]) {
+    if (argc > 1) {
+        // 通过文件关联启动，argv[1] 是文件的绝对路径
+        const char *file_path = argv[1];
+        printf("Opening file: %s\n", file_path);
+        // 处理文件...
+    } else {
+        // 正常启动，无关联文件
+        printf("Normal startup\n");
+    }
+    return 0;
+}
+```
+
+## 硬件信息
+
+### 按键定义
+
+设备有四个物理按键：
+
+| 按键 | 功能 |
+|------|------|
+| `KEY_1` | 上翻/增加 |
+| `KEY_2` | 下翻/减少 |
+| `KEY_3` | 进入/确定 |
+| `KEY_4` | 退出/取消 |
+
+使用 `keyinput_get_key()` 获取按键状态，返回 `-1` 表示无按键。
+
+### 硬件图层限制
+
+- 支持 4 个硬件图层 (ID: 0-3)
+- 图层 ID 越大，显示优先级越高
+- 图层 0 通常被终端控制台占用，建议从图层 1 开始使用
+- **重要**：全系统同时只能有一个图层支持透明度
+
+### 扩展接口
+
+设备提供以下扩展接口：
+
+| 接口 | 设备路径 |
+|------|----------|
+| I2C | `/dev/i2c-0` |
+| SPI | `/dev/spidev1.0` |
+| UART (第一组) | `/dev/ttyS1` |
+| UART (第二组) | `/dev/ttyS2` |
+| GPIO | `gpiochip0`，具体引脚见 `lib/epass_define.h` |
+
 ## 应用目录结构
 
 ```
@@ -103,6 +163,27 @@ arm-linux-gnueabihf-gcc --version
 ::: warning 关于 LVGL
 如需使用 LVGL，需要自行编译链接，系统默认不包含。
 :::
+
+### 使用模板开发
+
+推荐使用 `examples/template` 作为起点：
+
+1. 复制模板：`cp -r examples/template examples/my_program`
+2. 修改 `appconfig.json`：填写应用信息
+3. 修改 `main.c`：实现应用逻辑
+4. 修改 `CMakeLists.txt`：添加依赖库
+5. 添加到 `examples/CMakeLists.txt` 进行编译
+
+### 参考例程
+
+| 例程 | 功能 |
+|------|------|
+| `examples/epniccc` | 按键输入 + 画图 + RREFont 字体渲染 |
+| `examples/textreader` | 双缓冲 + TTF 渲染 |
+| `examples/i2c_test` | I2C 读写 |
+| `examples/spi_test` | SPI 读写 |
+| `examples/uart_test` | UART 读写 |
+| `examples/libgpio_test` | GPIO 读写 |
 
 ## 应用模板代码
 
@@ -234,6 +315,58 @@ int main(int argc, char *argv[]) {
 arm-linux-gnueabihf-gcc -o myapp_drm myapp_drm.c -ldrm
 ```
 
+### 内部开发库
+
+如果你的应用需要使用与主程序相同的底层库，可以使用以下库：
+
+| 库 | 头文件 | 用途 |
+|----|--------|------|
+| DRM 封装 | `lib/drm_warpper.h` | 显示驱动封装 |
+| 绘图库 | `lib/fbdraw.h` | 基本图形绘制 |
+| TTF 渲染 | `lib/fbdrawttf.h` | TrueType 字体渲染 |
+| 日志 | `lib/log.h` | 日志输出（log_info/log_error/log_debug） |
+
+注意：使用 STB 库时，需要在单独的 .c 文件中定义 Implementation。
+
+### DRM 编程模式
+
+推荐使用以下模式进行图形绘制：
+
+```c
+// 阻塞等待空闲 buffer (自带 Vsync 效果)
+drm_warpper_dequeue_free_item(&drm_warpper, layer_id, &curr_item);
+uint32_t* vaddr = (uint32_t*)curr_item->mount.arg0;
+
+// 使用 fbdraw 进行绘制
+fbdraw_fb_t fb = { .vaddr = vaddr, .width = 360, .height = 640 };
+fbdraw_fill_rect(&fb, &(fbdraw_rect_t){0, 0, 360, 640}, 0xFF000000); // 清屏
+
+// 提交显示
+drm_warpper_enqueue_display_item(&drm_warpper, layer_id, curr_item);
+```
+
+**注意事项：**
+- `buffer_object_t` 和 `drm_warpper_queue_item_t` 必须是 `static` 或生命周期覆盖整个运行期
+- 严禁使用局部栈变量
+- 如果不希望图层透明，需要把每个像素的 alpha 设置为 0xFF（如 0xFF000000 为黑色）
+
+### STB 库使用
+
+使用 stb_truetype 或 stb_image 时，需要在单独的 .c 文件中定义 Implementation：
+
+**stb_impl.c:**
+```c
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+```
+
+**用途说明：**
+- `stb_truetype`：用于 TTF 字体渲染（中文显示）
+- `stb_image`：用于图片加载和显示
+
 ## 配置文件编写
 
 ### 最小配置
@@ -244,6 +377,8 @@ arm-linux-gnueabihf-gcc -o myapp_drm myapp_drm.c -ldrm
 {
     "version": 1,
     "name": "My App",
+    "uuid": "使用 uuidgen 生成",
+    "type": "fg",
     "executable": "myapp"
 }
 ```
@@ -254,14 +389,36 @@ arm-linux-gnueabihf-gcc -o myapp_drm myapp_drm.c -ldrm
 {
     "version": 1,
     "name": "我的应用",
+    "uuid": "使用 uuidgen 生成",
     "description": "这是一个示例应用，展示基本功能",
-    "author": "开发者",
-    "app_version": "1.0.0",
-    "screen": "360x640",
     "icon": "icon.png",
+    "type": "fg",
+    "extensions": [".txt"],
     "executable": {
         "file": "myapp"
     }
+}
+```
+
+### 应用类型
+
+通过 `type` 字段控制应用的启动方式（必须指定）：
+
+| 类型 | 菜单显示 | 说明 | 使用场景 |
+|------|------|------|----------|
+| `fg` | 显示 | 前台应用 | 普通应用 |
+| `fg_ext` | 不显示 | 前台应用，仅文件关联启动 | 文件查看器、编辑器 |
+| `bg` | 显示 | 后台应用，不显示 UI | 服务程序 |
+
+示例：文本阅读器（仅通过文件打开）
+```json
+{
+    "version": 1,
+    "name": "文本阅读器",
+    "uuid": "生成的UUID",
+    "type": "fg_ext",
+    "extensions": [".txt", ".log", ".md"],
+    "executable": "textreader"
 }
 ```
 
@@ -395,9 +552,10 @@ printf("Working directory: %s\n", cwd);  // 输出: /app/myapp
 检查以下几点：
 1. 确认 `appconfig.json` 文件存在且格式正确
 2. 确认 `version` 字段值为 `1`
-3. 确认 `name` 和 `executable` 字段不为空
-4. 确认可执行文件存在
-5. 查看 `/root/apps.log` 获取详细错误信息
+3. 确认 `name`、`uuid`、`type` 和 `executable` 字段不为空
+4. 确认 `type` 不是 `fg_ext`（该类型不在菜单中显示）
+5. 确认可执行文件存在
+6. 查看 `/root/apps.log` 获取详细错误信息
 
 ### 应用启动失败？
 
