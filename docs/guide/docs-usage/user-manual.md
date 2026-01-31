@@ -1,28 +1,4 @@
 
-<style>
-.device-layout {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  margin: 16px 0;
-}
-.device-layout img {
-  max-width: 280px;
-  border-radius: 8px;
-}
-.device-layout table {
-  margin: 0;
-  flex: 1;
-}
-@media (max-width: 640px) {
-  .device-layout {
-    flex-direction: column;
-  }
-  .device-layout img {
-    max-width: 100%;
-  }
-}
-</style>
 # 白银电子通行证使用说明书
 
 ::: tip 适用版本
@@ -58,7 +34,6 @@
 
 ### 2.1 设备部件定义
 
-
 | 部件 | 说明 |
 |------|------|
 | 按键1 | 切换上一个角色 / 菜单向上 |
@@ -70,8 +45,6 @@
 | 开关 | 上推开机，下推关机（v0.6版为轻触按钮） |
 | 充电口 | Type-C 充电接口 |
 | 调试/拓展排针 | 用于调试和功能扩展 |
-
-</div>
 
 **图1：设备总览图** - 展示了电子通行证的各个部件及其功能
 
@@ -91,7 +64,6 @@
 2. 按动按键1/2使光标移动到"Shutdown"
 3. 按下按键3确认
 4. 等待系统关机完成后，下推开关至"OFF"位置
-
 
 ### 2.3 素材切换与播放调整
 
@@ -192,48 +164,8 @@
 
 ---
 
-<div class="doc-footer">
-
 本说明书适用于由B站UP主「**白银今天下班了吗**」设计并开源的电子通行证
 
-编写：**TQ不是时商、JUNU** · 遵循 <a href="https://creativecommons.org/licenses/by-nd/4.0/" target="_blank" class="license-badge">CC BY-ND 4.0</a>
+编写：**TQ不是时商、JUNU** · 遵循 [CC BY-ND 4.0](https://creativecommons.org/licenses/by-nd/4.0/)
 
-<div class="version-info">
-v0.0.1 · 2025年12月27日 → v0.0.2 · 2025年12月31日 → v0.0.3 · 2026年01月30日
-</div>
-
-</div>
-
-<style>
-.doc-footer {
-  text-align: center;
-  padding: 24px;
-  margin-top: 32px;
-  border-radius: 8px;
-  background: var(--vp-c-bg-soft);
-  font-size: 14px;
-  color: var(--vp-c-text-2);
-  line-height: 2;
-}
-.license-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-1);
-  font-weight: 600;
-  text-decoration: none;
-  margin-right: 4px;
-}
-.license-badge:hover {
-  background: var(--vp-c-brand-1);
-  color: white;
-}
-.version-info {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--vp-c-divider);
-  font-size: 12px;
-  color: var(--vp-c-text-3);
-}
-</style>
+版本信息：v0.0.1 · 2025年12月27日 → v0.0.2 · 2025年12月31日 → v0.0.3 · 2026年01月30日
