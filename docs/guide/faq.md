@@ -67,21 +67,98 @@
 
 ### 解决方案
 
+按住FEL按钮开机。（从上往下第五个按钮）
+
 参考刷新教程（1分钟处）：[BiliBili 视频教程](https://www.bilibili.com/video/BV1Xu28BDEjL/)
 
-## 5. 提示 "The spi nand flash '0x00000000' is not yet supported"
+## 5. 烧录过程的相关问题
 
-**现象**：烧录程序时提示 Flash 不支持
+请打开USBTreeView，根据情况进行排查：
+
+### 5.1 找不到FEL设备，且usbtreeview中显示"0x0000 0x0002"
+
+**现象**：如图：
+
+![usbtreeview_usb_fault](/images/usbtreeview_usb_fault.png)
+
+
+同上，检查USB链路焊接[2. 连上电脑提示 42/43 Device failed to start](#_2-连上电脑提示-42-43-device-failed-to-start)
+
+
+### 5.2 提示 "The spi nand flash '0x00000000' is not yet supported"
+
+**现象**：提示 "The spi nand flash '0x00000000' is not yet supported"
 
 ![Flash不支持错误](/images/2_8.png)
 
 **原因**：F1C 没认到 Flash 芯片
 
-### 解决方案
+#### 解决方案
 
 检查 NAND 区域引脚是否虚焊
 
 ![NAND区域引脚](/images/2_9.png)
+
+### 5.3 卡在“等待设备重启进入DFU模式....”，且Usbtreeview中提示报错代码28
+
+**现象**：卡在如图位置超过20秒：
+
+![stuck_on_dfu.png](/images/stuck_on_dfu.png)
+
+且USBTreeview中提示代码28：
+
+![usbtreeview_dfu_driver_install_failed.png](/images/usbtreeview_dfu_driver_install_failed.png)
+
+原因：DFU模式驱动安装失败。
+
+#### 解决方案
+
+按Windows+R（运行），输入
+
+```
+%appdata%\.epass-flasher\
+```
+
+按回车，删除其中的config.json文件，然后重启烧录程序。
+
+确保务必选择“安装驱动”，并等驱动彻底安装好（提示“请按任意键继续”）后再进入下一步。
+
+### 5.4 卡在“等待设备重启进入DFU模式....”，但USBTreeView中提示Allwinner FEL
+
+**现象**：卡在如图位置超过20秒：
+
+![stuck_on_dfu.png](/images/stuck_on_dfu.png)
+
+但USBTreeview中提示Allwinner FEL：
+
+![usbtreeview_fel.png](/images/usbtreeview_fel.png)
+
+原因：FEL烧录Uboot后，设备无法从Uboot启动，无法进行第二阶段烧录
+
+#### 解决方案
+
+1. 确定你确实松开了“FEL”按钮
+2. 检查NAND部分焊接，见[5.2 提示 "The spi nand flash '0x00000000' is not yet supported"](#_5-2-提示-the-spi-nand-flash-0x00000000-is-not-yet-supported)
+3. 更换flash
+
+### 5.4 卡在“等待设备重启进入DFU模式....”，但USBTreeView中啥都不显示
+
+**现象**：卡在如图位置超过20秒：
+
+![stuck_on_dfu.png](/images/stuck_on_dfu.png)
+
+但USBTreeview中啥都不显示：
+
+原因：FEL烧录Uboot后，设备读到了Uboot SPL，但是UBoot SPL 启动 UBoot Proper 失败
+
+#### 解决方案
+
+1. 检查供电是否正常，见[1. 三路供电没有全部出完或电压不对](#_1-三路供电没有全部出完或电压不对)
+   * 检查2.5V有没有和别的供电短路
+2. 检查主控芯片内存相关供电引脚是否虚焊，是否连锡
+   * ![ddr_pins](/images/ddr_pins.png)
+3. 更换主控。
+
 
 ## 6. 烧录完成后屏幕不显示
 
@@ -111,6 +188,12 @@
 | VS | 3.3V |
 
 **哪一路没有就加焊那一路（F1C）**
+
+::: warning 注意
+
+SCL在新固件(2.x+)只有刚开机几秒钟有电压，可以多重启几次测量
+
+:::
 
 ![F1C屏幕引脚1](/images/2_11.png)
 
