@@ -68,7 +68,7 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: '调试概述', link: '/guide/debug/' },
-            { text: '常见故障', link: '/guide/debug/troubleshooting' }
+            { text: '常见故障', link: '/guide/faq' }
           ]
         },
         {
