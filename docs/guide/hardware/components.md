@@ -77,12 +77,11 @@ scripts/
 └── excel-to-json.js         # Excel 转换脚本
 ```
 
-::: info 更新 BOM 数据的两种方法
+**更新 BOM 数据的两种方法**
 
 - 如果只是改少量价格、链接或描述，直接编辑 `docs/public/bom/*.json` 更省事。
 - 如果要从 KiCad / 立创 EDA 重新导出一整版采购数据，再使用 Excel 转换脚本更合适。
 - Excel 模板中的 **位号列现在是可选项**，不再是必填字段。
-:::
 
 ### 方法一：使用 Excel 转换脚本
 
@@ -120,12 +119,12 @@ node scripts/excel-to-json.js 你的BOM文件.xlsx v0.7
 - 更新 `docs/public/bom/index.json` 版本索引
 - 根据元件值、封装、描述和位号（如有）自动识别分类
 
-::: warning 自动分类的边界
+**自动分类的边界**
+
 去掉位号后，分类更多依赖值、封装和描述字段，因此：
 
 - `Value` 和 `Description` 最好写清楚，不要只保留过于简短的代号
 - 若自动分类不准确，生成后请手动修正 JSON 中的 `category`
-:::
 
 ### 方法二：手动编辑 JSON 文件
 
