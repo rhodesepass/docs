@@ -84,6 +84,7 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: '开发概述', link: '/guide/develop/' },
+            { text: 'drm_arch_app 开发详解', link: '/guide/develop/drm_arch_app' },
             { text: '开发环境搭建', link: '/guide/develop/env_setup' },
             { text: '第一个应用程序', link: '/guide/develop/your_first_app' },
             { text: '第三方应用开发指南', link: '/guide/develop/new_app_guide' },

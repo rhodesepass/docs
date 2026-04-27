@@ -49,7 +49,7 @@
 
 ---
 
-## 开发者指南：更新 BOM 表
+## 开发者指南：维护 BOM 数据
 
 ::: details 点击展开开发者文档
 
@@ -77,6 +77,13 @@ scripts/
 └── excel-to-json.js         # Excel 转换脚本
 ```
 
+::: info 更新 BOM 数据的两种方法
+
+- 如果只是改少量价格、链接或描述，直接编辑 `docs/public/bom/*.json` 更省事。
+- 如果要从 KiCad / 立创 EDA 重新导出一整版采购数据，再使用 Excel 转换脚本更合适。
+- Excel 模板中的 **位号列现在是可选项**，不再是必填字段。
+:::
+
 ### 方法一：使用 Excel 转换脚本
 
 适用于从 KiCad/立创EDA 等工具导出的 Excel BOM 文件。
@@ -84,16 +91,16 @@ scripts/
 **1. 安装依赖（仅首次）**
 
 ```bash
-npm install xlsx --save-dev
+npm install
 ```
 
 **2. 准备 Excel 文件**
 
-确保 Excel 文件包含以下列（支持中英文表头）：
+建议 Excel 文件包含以下列（支持中英文表头）：
 
 | 英文表头 | 中文表头 | 说明 |
 |---------|---------|------|
-| Designator / Reference | 位号 | 如 U1, C1, R1 |
+| Designator / Reference | 位号 | 可选，如 U1, C1, R1 |
 | Value / Comment | 值 | 如 F1C200S, 100nF |
 | Footprint | 封装 | 如 QFN-88, 0402 |
 | Quantity | 数量 | 数字 |
@@ -111,7 +118,14 @@ node scripts/excel-to-json.js 你的BOM文件.xlsx v0.7
 脚本会自动：
 - 生成 `docs/public/bom/v0.7.json`
 - 更新 `docs/public/bom/index.json` 版本索引
-- 根据位号和元件值自动识别分类
+- 根据元件值、封装、描述和位号（如有）自动识别分类
+
+::: warning 自动分类的边界
+去掉位号后，分类更多依赖值、封装和描述字段，因此：
+
+- `Value` 和 `Description` 最好写清楚，不要只保留过于简短的代号
+- 若自动分类不准确，生成后请手动修正 JSON 中的 `category`
+:::
 
 ### 方法二：手动编辑 JSON 文件
 

@@ -16,25 +16,48 @@ const CATEGORIES = [
   { id: 'other', name: '其他', color: '#607D8B' }
 ]
 
-function detectCategory(reference, value, footprint) {
-  const ref = reference.toUpperCase()
-  const val = value.toLowerCase()
+function normalizeText(value) {
+  return String(value ?? '').trim()
+}
 
-  if (ref.startsWith('U') && (val.includes('ldo') || val.includes('regulator') || val.includes('7333'))) return 'power'
-  if (ref.startsWith('D') && (val.includes('ss14') || val.includes('5819') || val.includes('schottky'))) return 'power'
-  if (val.includes('battery') || val.includes('电池')) return 'power'
-  if (ref.startsWith('U') && (val.includes('f1c') || val.includes('mcu') || val.includes('flash') || val.includes('sdram'))) return 'core'
-  if (val.includes('crystal') || val.includes('晶振') || ref.startsWith('Y')) return 'core'
-  if (val.includes('lcd') || val.includes('screen') || val.includes('屏') || val.includes('display')) return 'display'
-  if (ref.startsWith('J') || ref.startsWith('CN') || val.includes('connector') || val.includes('fpc')) return 'connector'
+function detectCategory(reference, value, footprint, description) {
+  const ref = normalizeText(reference).toUpperCase()
+  const val = normalizeText(value).toLowerCase()
+  const fp = normalizeText(footprint).toLowerCase()
+  const desc = normalizeText(description).toLowerCase()
+
+  if (
+    (ref.startsWith('U') && (val.includes('ldo') || val.includes('regulator') || val.includes('7333'))) ||
+    val.includes('ams1117') ||
+    val.includes('me6211') ||
+    desc.includes('稳压') ||
+    desc.includes('ldo')
+  ) return 'power'
+  if ((ref.startsWith('D') && (val.includes('ss14') || val.includes('5819') || val.includes('schottky'))) || desc.includes('肖特基')) return 'power'
+  if (val.includes('battery') || val.includes('电池') || desc.includes('电池')) return 'power'
+  if (
+    (ref.startsWith('U') && (val.includes('f1c') || val.includes('mcu') || val.includes('flash') || val.includes('sdram'))) ||
+    val.includes('f1c') ||
+    val.includes('flash') ||
+    val.includes('sdram') ||
+    desc.includes('主控') ||
+    desc.includes('flash') ||
+    desc.includes('sdram')
+  ) return 'core'
+  if (val.includes('crystal') || val.includes('晶振') || desc.includes('晶振') || ref.startsWith('Y')) return 'core'
+  if (val.includes('lcd') || val.includes('screen') || val.includes('屏') || val.includes('display') || fp.includes('fpc-24')) return 'display'
+  if (ref.startsWith('J') || ref.startsWith('CN') || val.includes('connector') || val.includes('fpc') || val.includes('usb-c') || val.includes('micro-usb') || desc.includes('连接器')) return 'connector'
   if (ref.startsWith('R') || ref.startsWith('C') || ref.startsWith('L')) return 'passive'
-  if (val.includes('sd') || val.includes('usb') || val.includes('uart')) return 'expansion'
+  if (val.includes('resistor') || val.includes('capacitor') || val.includes('ferrite') || desc.includes('电阻') || desc.includes('电容') || desc.includes('磁珠')) return 'passive'
+  if (val.includes('sd') || val.includes('usb') || val.includes('uart') || desc.includes('按键') || desc.includes('开关')) return 'expansion'
+  if (fp.includes('0402') || fp.includes('0603') || fp.includes('0805')) return 'passive'
   return 'other'
 }
 
 async function convertExcelToJson(inputPath, version) {
   try {
-    const XLSX = await import('xlsx')
+    const xlsxModule = await import('xlsx')
+    const XLSX = xlsxModule.default ?? xlsxModule
 
     const workbook = XLSX.readFile(inputPath)
     const sheetName = workbook.SheetNames[0]
@@ -42,30 +65,36 @@ async function convertExcelToJson(inputPath, version) {
     const data = XLSX.utils.sheet_to_json(worksheet)
 
     const components = data.map((row, index) => {
-      const reference = row['Designator'] || row['Reference'] || row['位号'] || ''
-      const value = row['Value'] || row['Comment'] || row['值'] || ''
-      const footprint = row['Footprint'] || row['封装'] || ''
-      const quantity = parseInt(row['Quantity'] || row['数量'] || '1', 10)
-      const description = row['Description'] || row['描述'] || ''
-      const supplierName = row['Supplier'] || row['供应商'] || '立创商城'
-      const supplierUrl = row['SupplierURL'] || row['链接'] || ''
-      const unitPrice = parseFloat(row['UnitPrice'] || row['Price'] || row['单价'] || '0')
+      const reference = normalizeText(row['Designator'] || row['Reference'] || row['位号'])
+      const value = normalizeText(row['Value'] || row['Comment'] || row['值'])
+      const footprint = normalizeText(row['Footprint'] || row['封装'])
+      const quantity = parseInt(normalizeText(row['Quantity'] || row['数量'] || '1'), 10)
+      const description = normalizeText(row['Description'] || row['描述'])
+      const supplierName = normalizeText(row['Supplier'] || row['供应商'] || '立创商城')
+      const supplierUrl = normalizeText(row['SupplierURL'] || row['链接'])
+      const unitPrice = parseFloat(normalizeText(row['UnitPrice'] || row['Price'] || row['单价'] || '0'))
 
       return {
         id: String(index + 1),
         reference,
         value,
         footprint,
-        quantity,
+        quantity: Number.isNaN(quantity) ? 1 : quantity,
         description,
-        category: detectCategory(reference, value, footprint),
+        category: detectCategory(reference, value, footprint, description),
         supplier: {
           name: supplierName,
           url: supplierUrl,
           unitPrice: isNaN(unitPrice) ? 0 : unitPrice
         }
       }
-    }).filter(c => c.reference)
+    }).filter(c =>
+      c.value ||
+      c.footprint ||
+      c.description ||
+      c.supplier.url ||
+      c.supplier.name
+    )
 
     const output = {
       version,

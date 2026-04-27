@@ -30,12 +30,6 @@
         <table class="bom-table">
           <thead>
             <tr>
-              <th @click="toggleSort('reference')" class="bom-th-sortable">
-                位号
-                <span class="bom-sort-icon" :class="{ active: sortBy === 'reference' }">
-                  {{ sortBy === 'reference' ? (sortDesc ? '↓' : '↑') : '↕' }}
-                </span>
-              </th>
               <th @click="toggleSort('value')" class="bom-th-sortable">
                 值
                 <span class="bom-sort-icon" :class="{ active: sortBy === 'value' }">
@@ -67,7 +61,6 @@
               :style="{ '--row-cat-color': getCategoryColor(comp.category) }"
               class="bom-row"
             >
-              <td class="bom-td-reference">{{ comp.reference }}</td>
               <td class="bom-td-value">{{ comp.value }}</td>
               <td class="bom-th-hide-mobile">{{ comp.footprint }}</td>
               <td class="bom-td-quantity">{{ comp.quantity }}</td>
@@ -126,7 +119,7 @@ interface Supplier {
 
 interface Component {
   id: string
-  reference: string
+  reference?: string
   value: string
   footprint: string
   quantity: number
@@ -158,7 +151,7 @@ const categories = ref<Category[]>([])
 const components = ref<Component[]>([])
 const selectedCategories = ref<string[]>([])
 const search = ref('')
-const sortBy = ref<'reference' | 'value' | 'quantity' | 'price' | ''>('')
+const sortBy = ref<'value' | 'quantity' | 'price' | ''>('')
 const sortDesc = ref(false)
 
 async function loadIndex() {
@@ -197,7 +190,7 @@ function getCategoryColor(categoryId: string): string {
   return cat?.color || '#607D8B'
 }
 
-function toggleSort(field: 'reference' | 'value' | 'quantity' | 'price') {
+function toggleSort(field: 'value' | 'quantity' | 'price') {
   if (sortBy.value === field) {
     sortDesc.value = !sortDesc.value
   } else {
@@ -218,10 +211,10 @@ const filteredComponents = computed(() => {
   if (search.value.trim()) {
     const q = search.value.toLowerCase().trim()
     result = result.filter(c =>
-      c.reference.toLowerCase().includes(q) ||
       c.value.toLowerCase().includes(q) ||
       c.footprint.toLowerCase().includes(q) ||
-      c.description.toLowerCase().includes(q)
+      c.description.toLowerCase().includes(q) ||
+      (c.reference?.toLowerCase().includes(q) ?? false)
     )
   }
 
@@ -230,9 +223,6 @@ const filteredComponents = computed(() => {
     result = [...result].sort((a, b) => {
       let cmp = 0
       switch (sortBy.value) {
-        case 'reference':
-          cmp = a.reference.localeCompare(b.reference)
-          break
         case 'value':
           cmp = a.value.localeCompare(b.value)
           break

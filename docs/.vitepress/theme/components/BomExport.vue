@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 interface Component {
-  reference: string
   value: string
   footprint: string
   quantity: number
@@ -40,9 +39,8 @@ const props = defineProps<{
 }>()
 
 function exportCSV() {
-  const headers = ['位号', '值', '封装', '数量', '描述', '供应商', '单价', '小计', '链接']
+  const headers = ['值', '封装', '数量', '描述', '供应商', '单价', '小计', '链接']
   const rows = props.data.map(c => [
-    c.reference,
     c.value,
     c.footprint,
     c.quantity,
